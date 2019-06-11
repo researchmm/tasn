@@ -1,0 +1,9 @@
+pre-build mxnet: https://drive.google.com/open?id=1Sfpw0x5XLqBFWAt99-zKOp4jAbOxm5Ws
+
+1) sudo bash init.sh
+2) set your nccl and cudnn path in train.sh
+3) sudo bash train.sh
+
+Note that 
+1) we use 8 P-100 gpus for training, lr is supposed to be tuned if you use less gpus.
+2) to obtain 336*336 input results (88.0%), just modify the AttSampler() in train.py , 'scale' parameter from 224/512 to 336/512.

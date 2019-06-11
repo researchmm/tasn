@@ -1,0 +1,10 @@
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj*
+*.o
+*.so
+*.html
+inst/doc
+NAMESPACE
+man

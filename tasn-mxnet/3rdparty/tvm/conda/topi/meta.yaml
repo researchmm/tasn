@@ -1,0 +1,34 @@
+{% set version = "0.5.dev" %}
+
+package:
+  name: topi
+  version: {{ version }}
+
+source:
+  path: ../..
+
+build:
+  number: 0
+
+requirements:
+  host:
+    - python {{ python }}
+    - numpy
+    - setuptools
+    - decorator
+    - tvm-libs =={{ version }}
+  run:
+    - python
+    - {{ pin_compatible('numpy') }}
+    - decorator
+    - tvm-libs =={{ version }}
+    - tvm =={{ version }}
+
+test:
+  imports:
+    - topi
+
+about:
+  home: https://github.com/dmlc/tvm
+  license: Apache2
+  summary: "TOPI: TVM Operator Inventory"
