@@ -74,9 +74,15 @@ PyTorch versioin
 -------
 On going.
 
-Add master net.
+Add master net (85.5%)
+
++ part net (86.2%) without distilling.
 
 Thank https://github.com/ShenghaiRong for reimplementing Attention sampler for pytorch verion.
+
+
+I would be very busy in the nearly future and cannot find time to finish the reimplement of pytorch version.
+If anyone can tune and finish the reimplement, feel free to create a pull request.
 
 Other Implements
 -------
