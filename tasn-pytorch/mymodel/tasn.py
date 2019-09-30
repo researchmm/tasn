@@ -173,12 +173,19 @@ class tri_att(nn.Module):
     f = x.reshape(n, c, -1)
 
     # *7 to obtain an appropriate scale for the input of softmax function.
-    f_norm = self.feature_norm(f * 7)
+    f_norm = self.feature_norm(f * 2)
 
     bilinear = f_norm.bmm(f.transpose(1, 2))
     bilinear = self.bilinear_norm(bilinear)
     trilinear_atts = bilinear.bmm(f).view(n, c, h, w).detach()
     structure_att = torch.sum(trilinear_atts,dim=1, keepdim=True)
+
+    index = torch.randint(c, (n,))
+    detail_att = trilinear_atts[torch.arange(n),index] + 0.01
+
+
+
+
     '''
     structure_att = torch.sum(trilinear_atts, dim=(2, 3))
     structure_att_sorted, _ = torch.sort(structure_att, dim=1)
@@ -196,16 +203,16 @@ class tri_att(nn.Module):
                                   mode='bilinear', align_corners=False).squeeze(1)
     structure_att = structure_att * structure_att
     '''
-    return structure_att
+    return structure_att, detail_att.unsqueeze(1)
 
 
-def att_sample(data, structure_att, out_size):
+def att_sample(data, att, out_size):
     n = data.size(0)
     h = data.size(2)
-    structure_att = F.interpolate(structure_att, (h, h), mode='bilinear', align_corners=False).squeeze(1)
-    map_sx, _ = torch.max(structure_att, 2)
+    att = F.interpolate(att, (h, h), mode='bilinear', align_corners=False).squeeze(1)
+    map_sx, _ = torch.max(att, 2)
     map_sx = map_sx.unsqueeze(2)
-    map_sy, _ = torch.max(structure_att, 1)
+    map_sy, _ = torch.max(att, 1)
     map_sy = map_sy.unsqueeze(2)
     sum_sx = torch.sum(map_sx, (1, 2), keepdim=True)
     sum_sy = torch.sum(map_sy, (1, 2), keepdim=True)
@@ -225,8 +232,8 @@ def att_sample(data, structure_att, out_size):
     grid_x = torch.matmul(one_vector, index_x.transpose(1, 2)).unsqueeze(-1)
     grid_y = torch.matmul(index_y, one_vector.transpose(1, 2)).unsqueeze(-1)
     grid = torch.cat((grid_x, grid_y), 3)
-    structure_data = F.grid_sample(data, grid)
-    return structure_data
+    data = F.grid_sample(data, grid)
+    return data
 
 
 
@@ -355,8 +362,10 @@ class Tasn(nn.Module):
 
         input_att = F.interpolate(x, (224, 224), mode='bilinear', align_corners=False)
         conv_att = self.model_att(input_att)
-        att = self.trilinear_att(conv_att)
-        input_cls = att_sample(x,att,224)
+        att_structure, att_detail = self.trilinear_att(conv_att)
+        input_structure = att_sample(x,att_structure,224)
+        input_detail = att_sample(x,att_detail,224)
+        input_cls = torch.cat((input_structure, input_detail),0)
         conv_cls = self.model_cls(input_cls)
         out_att = self.pool_att(conv_att)
         out_att = torch.flatten(out_att, 1)
@@ -364,7 +373,9 @@ class Tasn(nn.Module):
         out_cls = self.pool_cls(conv_cls)
         out_cls = torch.flatten(out_cls, 1)
         out_cls = self.fc_cls(out_cls)
-        return out_att, out_cls
+        out_structure, out_detail = torch.chunk(out_cls, 2)
+
+        return out_att, out_structure, out_detail
 
 def model(pretrained=False, progress=True, **kwargs):
 

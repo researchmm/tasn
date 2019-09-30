@@ -305,8 +305,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
         target = target.cuda(args.gpu, non_blocking=True)
 
         # compute output
-        output_att, output = model(images)
-        loss = criterion(output, target) + criterion(output_att, target)
+        output_att, output, output_detail = model(images)
+        loss = criterion(output, target) + criterion(output_att, target)*0.2 + criterion(output_detail, target)# + criterion(aux_structure, target) + criterion(aux_detail, target)
 
         # measure accuracy and record loss
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
@@ -325,6 +325,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
         if i % args.print_freq == 0:
             progress.display(i)
+
 
 
 def validate(val_loader, model, criterion, args):
@@ -348,7 +349,7 @@ def validate(val_loader, model, criterion, args):
             target = target.cuda(args.gpu, non_blocking=True)
 
             # compute output
-            _, output = model(images)
+            _, output, _ = model(images)
             loss = criterion(output, target)
 
             # measure accuracy and record loss
@@ -369,6 +370,7 @@ def validate(val_loader, model, criterion, args):
               .format(top1=top1, top5=top5))
 
     return top1.avg
+
 
 
 def save_checkpoint(state, is_best, filename='/v-helzhe/model/tasn/checkpoint.pth.tar'):
