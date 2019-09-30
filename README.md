@@ -72,4 +72,25 @@ src/operator/contrib/att_sampler.cu
 
 PyTorch versioin
 -------
-TODO
+On going.
+
+Add master net.
+
+Thank https://github.com/ShenghaiRong for reimplementing Attention sampler for pytorch verion.
+
+Other Implements
+-------
+Attention sampler implementation (free from rebuilding mxnet):
+
+https://github.com/wkcn/AttentionSampler
+
+
+Reference
+-------
+@inproceedings{zheng2019looking,
+  title={Looking for the Devil in the Details: Learning Trilinear Attention Sampling Network for Fine-grained Image Recognition},
+  author={Zheng, Heliang and Fu, Jianlong and Zha, Zheng-Jun and Luo, Jiebo},
+  booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+  pages={5012--5021},
+  year={2019}
+}
