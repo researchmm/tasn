@@ -2,7 +2,7 @@ sudo apt-get install -y libopenblas-dev liblapack-dev libopencv-dev
 sudo ln /dev/null /dev/raw1394
 
 
-sudo wget https://raw.githubusercontent.com/pavanjadhaw/gdown.pl/master/gdown.pl && sudo chmod u+x gdown.pl
+sudo chmod u+x gdown.pl
 sudo ./gdown.pl "https://drive.google.com/file/d/1ZWHE6vXD84G-dkB6bhSC4PLar59NHoMF" mxnet_python.tar
 sudo tar -xvf mxnet_python.tar 
 cd mxnet_python/python
